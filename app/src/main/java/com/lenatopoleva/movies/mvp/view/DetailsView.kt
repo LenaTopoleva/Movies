@@ -9,6 +9,6 @@ interface DetailsView: MvpView {
     fun setTitle(title: String)
     fun setAbout(overview: String)
     fun loadImage(posterPath: String)
-    fun loadBackdropImage(backdropPath: String)
+    fun loadBackdropImage(backdropPath: String?)
 
 }

@@ -15,7 +15,7 @@ import com.lenatopoleva.movies.mvp.model.imageloader.IImageLoader
 
 class GlideImageLoader(private val imageBaseUrl: String): IImageLoader<ImageView> {
 
-    override fun loadInto(url: String, container: ImageView) {
+    override fun loadInto(url: String?, container: ImageView) {
         val imgUrl = imageBaseUrl + url
 
     Glide.with(container.context)
@@ -47,7 +47,7 @@ class GlideImageLoader(private val imageBaseUrl: String): IImageLoader<ImageView
         .into(container)
     }
 
-    override fun loadWithRoundCornersInto(url: String, container: ImageView) {
+    override fun loadWithRoundCornersInto(url: String?, container: ImageView) {
         val imgUrl = imageBaseUrl + url
         var requestOptions = RequestOptions()
         requestOptions = requestOptions.transform(CenterCrop(), RoundedCorners(10))

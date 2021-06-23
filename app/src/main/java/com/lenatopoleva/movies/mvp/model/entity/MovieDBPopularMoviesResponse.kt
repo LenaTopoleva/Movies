@@ -15,7 +15,7 @@ data class MovieDBPopularMoviesResponse (
 @Parcelize
 data class Movie (
     @Expose val adult: Boolean,
-    @Expose val backdropPath: String,
+    @Expose val backdropPath: String?,
     @Expose val genreIDS: List<Long>,
 
     @Expose val id: Long,

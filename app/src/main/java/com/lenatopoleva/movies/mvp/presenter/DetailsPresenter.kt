@@ -17,7 +17,8 @@ class DetailsPresenter(val movie: Movie): MvpPresenter<DetailsView>()  {
         viewState.setTitle(movie.title)
         movie.overview?.let { viewState.setAbout(movie.overview) }
         movie.posterPath?.let { viewState.loadImage(movie.posterPath) }
-        movie.posterPath?.let { viewState.loadBackdropImage(movie.backdropPath) }
+        if (movie.backdropPath != null)  viewState.loadBackdropImage(movie.backdropPath)
+        else viewState.loadBackdropImage(movie.posterPath)
     }
 
     fun backClick(): Boolean {

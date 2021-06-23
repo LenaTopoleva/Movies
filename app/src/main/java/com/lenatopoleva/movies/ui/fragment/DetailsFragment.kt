@@ -45,7 +45,9 @@ class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
     override fun setTitle (title: String) { tv_name.text = title }
     override fun setAbout(overview: String) { tv_about.text = overview }
     override fun loadImage(posterPath: String) = imageLoader.loadWithRoundCornersInto(posterPath, iv_image)
-    override fun loadBackdropImage(backdropPath: String) = imageLoader.loadInto(backdropPath, iv_backdrop)
+    override fun loadBackdropImage(backdropPath: String?) {
+        imageLoader.loadInto(backdropPath, iv_backdrop)
+    }
 
     override fun backPressed() = presenter.backClick()
 }
