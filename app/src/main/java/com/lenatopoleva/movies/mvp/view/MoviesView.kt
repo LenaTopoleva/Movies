@@ -7,4 +7,5 @@ import moxy.viewstate.strategy.alias.AddToEndSingle
 interface MoviesView: MvpView {
     fun init()
     fun updateMoviesList()
+    fun scrollListToCurrentPosition(currentItem: Int)
 }

@@ -4,5 +4,5 @@ import com.lenatopoleva.movies.mvp.model.entity.Movie
 import io.reactivex.rxjava3.core.Single
 
 interface IMoviesRepository {
-    fun getMovies(): Single<List<Movie>>
+    fun getMovies(page: Int): Single<List<Movie>>
 }

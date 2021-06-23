@@ -30,6 +30,8 @@ class MoviesPresenter(): MvpPresenter<MoviesView>() {
             movie.posterPath?.let { view.loadImage(it) }
         }
         override fun getCount() = movies.size
+
+        var currentItem: Int = 0
     }
 
     val moviesListPresenter = MoviesListPresenter()
@@ -38,21 +40,20 @@ class MoviesPresenter(): MvpPresenter<MoviesView>() {
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         viewState.init()
-        loadMovies()
+        loadMovies(1)
 
         moviesListPresenter.itemClickListener = { view ->
             router.navigateTo(Screens.DetailsScreen(moviesListPresenter.movies[view.pos]))
-
+            moviesListPresenter.currentItem = view.pos
         }
     }
 
-    private fun loadMovies() {
-        disposables.add(moviesRepository.getMovies()
+    fun loadMovies(page: Int) {
+        disposables.add(moviesRepository.getMovies(page)
             .retry(3)
             .observeOn(uiScheduler)
             .subscribe(
                 {
-                    moviesListPresenter.movies.clear()
                     moviesListPresenter.movies.addAll(it)
                     println("FIRST FILM: ${moviesListPresenter.movies.first().title}")
                     viewState.updateMoviesList()
@@ -68,6 +69,10 @@ class MoviesPresenter(): MvpPresenter<MoviesView>() {
     override fun onDestroy() {
         super.onDestroy()
         disposables.dispose()
+    }
+
+    fun onViewCreated() {
+        viewState.scrollListToCurrentPosition(moviesListPresenter.currentItem)
     }
 
 }

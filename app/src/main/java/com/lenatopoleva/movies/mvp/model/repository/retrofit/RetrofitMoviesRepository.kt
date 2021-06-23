@@ -9,8 +9,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 
 class RetrofitMoviesRepository(val api: IDataSource): IMoviesRepository {
 
-    override fun getMovies(): Single<List<Movie>> =
-        api.getPopularMovies(MOVIE_DB_API_KEY).flatMap { response ->
+    override fun getMovies(page: Int): Single<List<Movie>> =
+        api.getPopularMovies(MOVIE_DB_API_KEY, page).flatMap { response ->
             Single.just(response.results)
         }.subscribeOn(Schedulers.io())
 
