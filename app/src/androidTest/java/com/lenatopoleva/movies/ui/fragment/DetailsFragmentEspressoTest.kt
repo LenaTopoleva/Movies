@@ -20,6 +20,7 @@ import moxy.MvpPresenter
 import moxy.PresenterStore
 import org.junit.Before
 import org.junit.Test
+import ru.terrakok.cicerone.Router
 
 
 class DetailsFragmentEspressoTest{
@@ -34,14 +35,14 @@ class DetailsFragmentEspressoTest{
         5135.463,"/7rhzEufovmmUqVjcbzMHTBQ2SCG.jpg","2021-06-17",
         "Luca",false,8.3,969)
 
+    private val testFragmentArgs = bundleOf("movie" to testMovie)
     private val presenter = mockk<DetailsPresenter>()
-    val fragmentArgs = bundleOf("movie" to testMovie)
-
-
 
     @Before
     fun setup(){
-        // Попытка заменить презентер пустышкой
+        scenario = launchFragmentInContainer<DetailsFragment>(testFragmentArgs)
+        scenario.moveToState(Lifecycle.State.RESUMED)
+    // Попытка заменить презентер пустышкой
 //        MvpFacade.getInstance().presenterStore = object : PresenterStore() {
 //            override fun get(tag: String?): MvpPresenter<*> {
 //                return presenter
@@ -49,22 +50,22 @@ class DetailsFragmentEspressoTest{
 //        }
     }
 
-
     @Test
     fun fragment_testBundle(){
-        scenario = launchFragmentInContainer<DetailsFragment>(fragmentArgs)
-        scenario.moveToState(Lifecycle.State.RESUMED)
         val assertion = matches(withText("Luca"))
         onView(withId(R.id.tv_name)).check(assertion)
     }
 
     @Test
+    fun setAbout_changeTextViewAboutText(){
+        scenario.onFragment { fragment -> fragment.setAbout("New film") }
+        val assertion = matches(withText("New film"))
+        onView(withId(R.id.tv_about)).check(assertion)
+    }
+
+    @Test
     // Здесь надо замокировать презентер! - FAILED with exception
     fun funBackPressed_invokePresenterBackClickedMethod(){
-        scenario = launchFragmentInContainer<DetailsFragment>(fragmentArgs)
-        scenario.moveToState(Lifecycle.State.RESUMED)
-        every { presenter.backClick() } returns true
-
         scenario.onFragment { fragment -> fragment.backPressed() }
         verify(exactly = 1) { presenter.backClick()}
     }
