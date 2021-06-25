@@ -1,26 +1,27 @@
 package com.lenatopoleva.movies.ui.fragment
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.fragment.app.testing.withFragment
 import androidx.lifecycle.Lifecycle
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.lenatopoleva.movies.R
+import com.lenatopoleva.movies.di.DaggerTestAppComponent
+import com.lenatopoleva.movies.di.modules.testModules.TestImageLoaderModule
 import com.lenatopoleva.movies.mvp.model.entity.Movie
 import com.lenatopoleva.movies.mvp.model.entity.OriginalLanguage
 import com.lenatopoleva.movies.mvp.presenter.DetailsPresenter
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import moxy.MvpFacade
-import moxy.MvpPresenter
-import moxy.PresenterStore
+import kotlinx.android.synthetic.main.fragment_details.*
 import org.junit.Before
 import org.junit.Test
-import ru.terrakok.cicerone.Router
 
 
 class DetailsFragmentEspressoTest{
@@ -40,8 +41,15 @@ class DetailsFragmentEspressoTest{
 
     @Before
     fun setup(){
+        val testAppComponent =  DaggerTestAppComponent.builder()
+            .testImageLoaderModule(TestImageLoaderModule())
+            .build()
+
         scenario = launchFragmentInContainer<DetailsFragment>(testFragmentArgs)
         scenario.moveToState(Lifecycle.State.RESUMED)
+
+        scenario.onFragment{fragment ->  testAppComponent.inject(fragment)}
+
     // Попытка заменить презентер пустышкой
 //        MvpFacade.getInstance().presenterStore = object : PresenterStore() {
 //            override fun get(tag: String?): MvpPresenter<*> {
@@ -57,10 +65,28 @@ class DetailsFragmentEspressoTest{
     }
 
     @Test
+    fun setTitle_changeTextViewTitleText(){
+        scenario.onFragment { fragment -> fragment.setTitle("Film") }
+        val assertion = matches(withText("Film"))
+        onView(withId(R.id.tv_name)).check(assertion)
+    }
+
+    @Test
     fun setAbout_changeTextViewAboutText(){
         scenario.onFragment { fragment -> fragment.setAbout("New film") }
         val assertion = matches(withText("New film"))
         onView(withId(R.id.tv_about)).check(assertion)
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun loadImage_invokeImageLoaderMethod_loadWithRoundCornersInto(){
+        val posterPath = "/7rhzEufovmmUqVjcbzMHTBQ2SCG.jpg"
+        scenario.onFragment { fragment -> fragment.loadImage(posterPath) }
+        scenario.withFragment {
+            val imageContainer = iv_image
+            verify(exactly = 1){imageLoader.loadWithRoundCornersInto(posterPath, imageContainer)}
+        }
     }
 
     @Test

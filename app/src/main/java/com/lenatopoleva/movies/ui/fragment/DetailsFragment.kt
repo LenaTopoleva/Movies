@@ -55,4 +55,5 @@ class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
     }
 
     override fun backPressed() = presenter.backClick()
+
 }
