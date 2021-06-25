@@ -14,10 +14,20 @@ import com.lenatopoleva.movies.ui.App
 import com.lenatopoleva.movies.ui.BackButtonListener
 import kotlinx.android.synthetic.main.fragment_details.*
 import moxy.MvpAppCompatFragment
-import moxy.ktx.moxyPresenter
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import javax.inject.Inject
 
 class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
+
+    @InjectPresenter
+    lateinit var presenter: DetailsPresenter
+
+    @ProvidePresenter
+    fun provide(): DetailsPresenter {
+        val movie = arguments?.getParcelable<Movie>("movie") as Movie
+        return DetailsPresenter(movie)
+    }
 
     @Inject
     lateinit var imageLoader: IImageLoader<ImageView>
@@ -28,11 +38,6 @@ class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
                 putParcelable("movie", movie)
             }
         }
-    }
-
-    val presenter: DetailsPresenter by moxyPresenter {
-        val movie = arguments?.getParcelable<Movie>("movie") as Movie
-        DetailsPresenter(movie).apply { App.instance.appComponent.inject(this) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
