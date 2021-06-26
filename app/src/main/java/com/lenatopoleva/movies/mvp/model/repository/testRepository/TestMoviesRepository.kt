@@ -26,19 +26,4 @@ class TestMoviesRepository(): IMoviesRepository {
         return Single.just(list.toList()).subscribeOn(Schedulers.io())
     }
 
-//    override fun getMovies(page: Int): List<Movie> {
-//        list.clear()
-//        for (index in 1..20) {
-//            val title = "Luca #$index"
-//            list.add(
-//                Movie (false,"/uAQrHntCccFpvxp75XdQgqexlJd.jpg",
-//                    listOf(16,35,10751,14),508943, OriginalLanguage.En,title,
-//                    "Luca and his best friend Alberto...",
-//                    5135.463,"/7rhzEufovmmUqVjcbzMHTBQ2SCG.jpg","2021-06-17",
-//                    "Luca",false,8.3,969)
-//            )
-//        }
-//        return list.toList()
-//    }
-
 }
