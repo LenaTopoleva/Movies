@@ -5,4 +5,5 @@ import io.reactivex.rxjava3.core.Single
 
 interface IMoviesRepository {
     fun getMovies(page: Int): Single<List<Movie>>
+//    fun getMovies(page: Int): List<Movie>
 }

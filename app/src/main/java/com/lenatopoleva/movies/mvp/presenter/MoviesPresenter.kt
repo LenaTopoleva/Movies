@@ -6,17 +6,18 @@ import com.lenatopoleva.movies.mvp.presenter.list.IMoviesListPresenter
 import com.lenatopoleva.movies.mvp.view.MoviesView
 import com.lenatopoleva.movies.mvp.view.list.MovieItemView
 import com.lenatopoleva.movies.navigation.Screens
+import com.lenatopoleva.movies.ui.App
 import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import moxy.MvpPresenter
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
-class MoviesPresenter(): MvpPresenter<MoviesView>() {
+class MoviesPresenter @Inject constructor(val router: Router, val moviesRepository: IMoviesRepository, val uiScheduler: Scheduler): MvpPresenter<MoviesView>() {
 
-    @Inject lateinit var router: Router
-    @Inject lateinit var moviesRepository: IMoviesRepository
-    @Inject lateinit var uiScheduler: Scheduler
+    init {
+        App.instance.appComponent.inject(this)
+    }
 
     class MoviesListPresenter : IMoviesListPresenter {
         override var itemClickListener: ((MovieItemView) -> Unit)? = null
@@ -25,7 +26,7 @@ class MoviesPresenter(): MvpPresenter<MoviesView>() {
 
         override fun bindView(view: MovieItemView) {
             val movie = movies[view.pos]
-            view.setTitle(movie.title)
+            view.setTitle(movie.originalTitle)
             println("FILM: ${movie.title}")
             movie.posterPath?.let { view.loadImage(it) }
         }

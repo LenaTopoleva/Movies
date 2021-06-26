@@ -20,7 +20,6 @@ class DetailsPresenter(val movie: Movie): MvpPresenter<DetailsView>()  {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        viewState.init()
         viewState.setTitle(movie.title)
         movie.overview?.let { viewState.setAbout(movie.overview) }
         movie.posterPath?.let { viewState.loadImage(movie.posterPath) }

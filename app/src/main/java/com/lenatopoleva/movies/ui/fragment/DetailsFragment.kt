@@ -18,13 +18,13 @@ import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import javax.inject.Inject
 
-class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
+open class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
 
     @InjectPresenter
     lateinit var presenter: DetailsPresenter
 
     @ProvidePresenter
-    fun provide(): DetailsPresenter {
+    open fun provide(): DetailsPresenter {
         val movie = arguments?.getParcelable<Movie>("movie") as Movie
         return DetailsPresenter(movie)
     }
@@ -40,12 +40,12 @@ class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-        View.inflate(context, R.layout.fragment_details, null)
-
-    override fun init() {
+    init {
         App.instance.appComponent.inject(this)
     }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        View.inflate(context, R.layout.fragment_details, null)
 
     override fun setTitle (title: String) { tv_name.text = title }
     override fun setAbout(overview: String) { tv_about.text = overview }

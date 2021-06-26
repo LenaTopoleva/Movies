@@ -7,26 +7,37 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.fragment.app.testing.withFragment
 import androidx.lifecycle.Lifecycle
+import androidx.test.InstrumentationRegistry
+import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.lenatopoleva.movies.R
 import com.lenatopoleva.movies.di.DaggerTestAppComponent
+import com.lenatopoleva.movies.di.modules.NavigationModule
 import com.lenatopoleva.movies.di.modules.testModules.TestImageLoaderModule
 import com.lenatopoleva.movies.mvp.model.entity.Movie
 import com.lenatopoleva.movies.mvp.model.entity.OriginalLanguage
 import com.lenatopoleva.movies.mvp.presenter.DetailsPresenter
+import com.lenatopoleva.movies.ui.App
+import com.lenatopoleva.movies.ui.activity.MainActivity
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.android.synthetic.main.fragment_details.*
+import moxy.MvpFacade
+import moxy.MvpPresenter
+import moxy.PresenterStore
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
 
-class DetailsFragmentEspressoTest{
+// Наследуемся от DetailsFragment, чтобы переопределить метод provide(), предоставляющий презентер,
+// чтобы заменить moxy presenter пустышкой
+class DetailsFragmentEspressoTest: DetailsFragment() {
 
-    private lateinit var scenario: FragmentScenario<DetailsFragment>
+    private lateinit var scenario: FragmentScenario<DetailsFragmentEspressoTest>
 
     private val testMovie = Movie(false,"/uAQrHntCccFpvxp75XdQgqexlJd.jpg",
         listOf(16,35,10751,14),508943, OriginalLanguage.En,"Luca",
@@ -37,29 +48,38 @@ class DetailsFragmentEspressoTest{
         "Luca",false,8.3,969)
 
     private val testFragmentArgs = bundleOf("movie" to testMovie)
-    private val presenter = mockk<DetailsPresenter>()
+
+    private val testPresenter = mockk<DetailsPresenter>(relaxed = true)
+
+    // Подменяем презентер на мок
+    override fun provide(): DetailsPresenter = testPresenter
 
     @Before
     fun setup(){
+        val app = InstrumentationRegistry.getTargetContext().applicationContext as App
+        // Создаем тестовый компонент dagger (в котором создается мок imageLoader)
         val testAppComponent =  DaggerTestAppComponent.builder()
             .testImageLoaderModule(TestImageLoaderModule())
             .build()
+        app.appComponent = testAppComponent
 
-        scenario = launchFragmentInContainer<DetailsFragment>(testFragmentArgs)
+       // Запускаем фрагмент
+        scenario = launchFragmentInContainer<DetailsFragmentEspressoTest>(testFragmentArgs)
+
+        // Inject imageLoader mock
+        scenario.onFragment { fragment -> testAppComponent.inject(fragment) }
+
+        // Приводим фрагмент к состоянию RESUMED
         scenario.moveToState(Lifecycle.State.RESUMED)
 
-        scenario.onFragment{fragment ->  testAppComponent.inject(fragment)}
-
-    // Попытка заменить презентер пустышкой
-//        MvpFacade.getInstance().presenterStore = object : PresenterStore() {
-//            override fun get(tag: String?): MvpPresenter<*> {
-//                return presenter
-//            }
-//        }
     }
 
     @Test
     fun fragment_testBundle(){
+        scenario.withFragment {
+            val movie = arguments?.getParcelable<Movie>("movie") as Movie
+            setTitle(movie.originalTitle)
+        }
         val assertion = matches(withText("Luca"))
         onView(withId(R.id.tv_name)).check(assertion)
     }
@@ -90,9 +110,10 @@ class DetailsFragmentEspressoTest{
     }
 
     @Test
-    // Здесь надо замокировать презентер! - FAILED with exception
     fun funBackPressed_invokePresenterBackClickedMethod(){
-        scenario.onFragment { fragment -> fragment.backPressed() }
-        verify(exactly = 1) { presenter.backClick()}
+        scenario.withFragment {
+            backPressed()
+            verify(exactly = 1) { presenter.backClick()}
+        }
     }
 }

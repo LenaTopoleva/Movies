@@ -27,4 +27,5 @@ interface AppComponent {
     fun inject(moviesRvAdapter: MoviesRvAdapter)
     fun inject(detailsFragment: DetailsFragment)
     fun inject(detailsPresenter: DetailsPresenter)
+    fun inject(moviesFragment: MoviesFragment)
 }
