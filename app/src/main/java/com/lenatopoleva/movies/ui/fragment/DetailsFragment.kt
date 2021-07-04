@@ -14,10 +14,20 @@ import com.lenatopoleva.movies.ui.App
 import com.lenatopoleva.movies.ui.BackButtonListener
 import kotlinx.android.synthetic.main.fragment_details.*
 import moxy.MvpAppCompatFragment
-import moxy.ktx.moxyPresenter
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import javax.inject.Inject
 
-class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
+open class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
+
+    @InjectPresenter
+    lateinit var presenter: DetailsPresenter
+
+    @ProvidePresenter
+    open fun provide(): DetailsPresenter {
+        val movie = arguments?.getParcelable<Movie>("movie") as Movie
+        return DetailsPresenter(movie)
+    }
 
     @Inject
     lateinit var imageLoader: IImageLoader<ImageView>
@@ -30,17 +40,12 @@ class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
         }
     }
 
-    val presenter: DetailsPresenter by moxyPresenter {
-        val movie = arguments?.getParcelable<Movie>("movie") as Movie
-        DetailsPresenter(movie).apply { App.instance.appComponent.inject(this) }
+    init {
+        App.instance.appComponent.inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         View.inflate(context, R.layout.fragment_details, null)
-
-    override fun init() {
-        App.instance.appComponent.inject(this)
-    }
 
     override fun setTitle (title: String) { tv_name.text = title }
     override fun setAbout(overview: String) { tv_about.text = overview }
@@ -50,4 +55,5 @@ class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
     }
 
     override fun backPressed() = presenter.backClick()
+
 }

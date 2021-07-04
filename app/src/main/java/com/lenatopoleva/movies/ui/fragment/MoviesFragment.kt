@@ -14,7 +14,9 @@ import com.lenatopoleva.movies.ui.adapter.EndlessRecyclerViewScrollListener
 import com.lenatopoleva.movies.ui.adapter.MoviesRvAdapter
 import kotlinx.android.synthetic.main.fragment_movies.*
 import moxy.MvpAppCompatFragment
-import moxy.ktx.moxyPresenter
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
+import javax.inject.Inject
 
 
 class MoviesFragment: MvpAppCompatFragment(), MoviesView, BackButtonListener {
@@ -23,12 +25,19 @@ class MoviesFragment: MvpAppCompatFragment(), MoviesView, BackButtonListener {
         fun newInstance() = MoviesFragment()
     }
 
-    val presenter: MoviesPresenter by moxyPresenter {
-        MoviesPresenter().apply{ App.instance.appComponent.inject(this)}
-    }
+    @Inject
+    @InjectPresenter
+    lateinit var presenter: MoviesPresenter
+
+    @ProvidePresenter
+    fun provide(): MoviesPresenter = presenter
 
     private var adapter: MoviesRvAdapter? = null
     lateinit var scrollListener: EndlessRecyclerViewScrollListener
+    
+    init {
+        App.instance.appComponent.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
