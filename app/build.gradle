@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id  'kotlin-kapt'
     id 'kotlin-android-extensions'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -62,6 +63,10 @@ dependencies {
 
     //Navigation
     implementation 'ru.terrakok.cicerone:cicerone:5.1.1'
+    //Navigation Component
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.5"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.5"
+
 
     //Dagger
     implementation 'com.google.dagger:dagger:2.35.1'

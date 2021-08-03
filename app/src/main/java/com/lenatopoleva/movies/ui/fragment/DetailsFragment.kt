@@ -5,33 +5,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.navigation.fragment.navArgs
 import com.lenatopoleva.movies.R
-import com.lenatopoleva.movies.mvp.model.entity.Movie
 import com.lenatopoleva.movies.mvp.model.imageloader.IImageLoader
 import com.lenatopoleva.movies.mvp.presenter.DetailsPresenter
 import com.lenatopoleva.movies.mvp.view.DetailsView
 import com.lenatopoleva.movies.ui.App
-import com.lenatopoleva.movies.ui.BackButtonListener
 import kotlinx.android.synthetic.main.fragment_details.*
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import javax.inject.Inject
 
-class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
+class DetailsFragment: MvpAppCompatFragment(), DetailsView {
+
+    private val args: DetailsFragmentArgs  by navArgs()
 
     @Inject
     lateinit var imageLoader: IImageLoader<ImageView>
 
-    companion object {
-        fun newInstance(movie: Movie) = DetailsFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable("movie", movie)
-            }
-        }
-    }
-
     val presenter: DetailsPresenter by moxyPresenter {
-        val movie = arguments?.getParcelable<Movie>("movie") as Movie
+        val movie = args.movie
         DetailsPresenter(movie).apply { App.instance.appComponent.inject(this) }
     }
 
@@ -49,5 +42,4 @@ class DetailsFragment: MvpAppCompatFragment(), DetailsView, BackButtonListener {
         imageLoader.loadInto(backdropPath, iv_backdrop)
     }
 
-    override fun backPressed() = presenter.backClick()
 }

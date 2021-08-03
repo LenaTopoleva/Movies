@@ -21,15 +21,14 @@ class MoviesRvAdapter (val presenter: IMoviesListPresenter) : RecyclerView.Adapt
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_movie, parent, false)).apply {
             println("Adapter: onCreateViewHolder")
-            containerView.setOnClickListener {
-                presenter.itemClickListener?.invoke(this)
-            }
         }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         println("Adapter: onBindViewHolder")
         holder.pos = position
-        holder.containerView.setOnClickListener { presenter.itemClickListener?.invoke(holder) }
+        holder.containerView.setOnClickListener {
+            presenter.itemClickListener?.invoke(holder)
+        }
         presenter.bindView(holder)
     }
 

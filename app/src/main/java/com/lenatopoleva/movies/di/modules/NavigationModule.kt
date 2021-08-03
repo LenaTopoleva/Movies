@@ -7,15 +7,5 @@ import ru.terrakok.cicerone.Router
 
 @Module
 class NavigationModule {
-    private val cicerone: Cicerone<Router> = Cicerone.create()
-
-    @Provides
-    fun cicerone(): Cicerone<Router> = cicerone
-
-    @Provides
-    fun navigatorHolder() = cicerone.navigatorHolder
-
-    @Provides
-    fun router() = cicerone.router
 
 }
